@@ -23,18 +23,25 @@ import memberRoutes from "./routes/member.route";
 const app = express();
 const BASE_PATH = config.BASE_PATH;
 
-app.use(express.json());
+// harus paling atas
+app.use(
+  cors({
+    origin: config.FRONTEND_ORIGIN,
+    credentials: true,
+  })
+);
 
+app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.use(
   session({
     name: "session",
     keys: [config.SESSION_SECRET],
-    maxAge: 24 * 60 * 60 * 1000,
+    maxAge: 24 * 60 * 60 * 1000, // 1 hari
     secure: config.NODE_ENV === "production",
     httpOnly: true,
-    sameSite: "none",
+    sameSite: "none", // wajib none biar cross-site cookies bisa
   })
 );
 
