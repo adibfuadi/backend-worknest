@@ -47,23 +47,16 @@ app.use(
 
 app.use(passport.initialize());
 app.use(passport.session());
-
-app.use(
-    cors({
-      origin: config.FRONTEND_ORIGIN,
-      credentials: true,
-    })
-  );
   
-  app.get(
-    `/`,
-    asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
-        // throw new BadRequestException("Bad request", ErrorCodeEnum.AUTH_UNAUTHORIZED_ACCESS)
-       return res.status(HTTPSTATUS.OK).json({
-        message: "Hello Subscribe to the channel & share",
-      });
-    })
-  );
+app.get(
+  `/`,
+  asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+      // throw new BadRequestException("Bad request", ErrorCodeEnum.AUTH_UNAUTHORIZED_ACCESS)
+      return res.status(HTTPSTATUS.OK).json({
+      message: "Hello Subscribe to the channel & share",
+    });
+  })
+);
 
 app.use(`${BASE_PATH}/auth`, authRoutes);
 app.use(`${BASE_PATH}/user`, isAuthenticated, userRoutes);
