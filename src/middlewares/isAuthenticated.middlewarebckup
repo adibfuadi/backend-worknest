@@ -1,0 +1,42 @@
+import { NextFunction, Request, Response } from "express";
+import { UnauthorizedException } from "../utils/appError";
+import admin from "../utils/firebaseAdmin";
+import UserModel from "../models/user.model";
+import { asyncHandler } from "./asyncHandler.middleware";
+
+
+
+const isAuthenticated = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+  // if (!req.user || !req.user._id) {
+  //   throw new UnauthorizedException("Unauthorized. Please log in.");
+  // }
+  // next();
+  const token = req.headers.authorization?.split("Bearer ")[1];
+
+  console.log(token) 
+
+  if (!token) {
+    throw new UnauthorizedException("No token provided");
+  }
+
+  try {
+    // 1️⃣ Verifikasi token Firebase
+    const decodedToken = await admin.auth().verifyIdToken(token);
+    req.firebaseUser = decodedToken; // Simpan data dari Firebase
+
+    // 2️⃣ Cari user di database berdasarkan `firebaseUid`
+    const user = await UserModel.findOne({ firebaseUid: decodedToken.uid });
+
+    if (!user) {
+      throw new UnauthorizedException("User not found in database");
+    }
+
+    req.user = user; // Simpan data user dari database
+    next();
+  } catch (error) {
+    console.error("Auth error:", error);
+    throw new UnauthorizedException("Invalid token");
+  }
+});
+
+export default isAuthenticated;
