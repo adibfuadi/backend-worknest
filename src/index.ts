@@ -50,6 +50,13 @@ const BASE_PATH = config.BASE_PATH;
 // app.use(passport.initialize());
 // app.use(passport.session());
 
+app.use(
+  cors({
+    origin: config.FRONTEND_ORIGIN,
+    credentials: true,
+  })
+);
+
 app.use(express.json());
 
 app.use(express.urlencoded({ extended: true }));
@@ -69,13 +76,6 @@ app.use(
 
 app.use(passport.initialize());
 app.use(passport.session());
-
-app.use(
-  cors({
-    origin: config.FRONTEND_ORIGIN,
-    credentials: true,
-  })
-);
 
 app.get(
   `/`,
