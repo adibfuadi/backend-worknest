@@ -23,7 +23,53 @@ import memberRoutes from "./routes/member.route";
 const app = express();
 const BASE_PATH = config.BASE_PATH;
 
-// harus paling atas
+// // harus paling atas
+// app.use(
+//   cors({
+//     origin: config.FRONTEND_ORIGIN,
+//     credentials: true,
+//   })
+// );
+
+// app.use(express.json());
+// app.use(express.urlencoded({ extended: true }));
+
+// app.set("trust proxy", 1); 
+
+// app.use(
+//   session({
+//     name: "session",
+//     keys: [config.SESSION_SECRET],
+//     maxAge: 24 * 60 * 60 * 1000, // 1 hari
+//     secure: config.NODE_ENV === "production",
+//     httpOnly: true,
+//     sameSite: "none", // wajib none biar cross-site cookies bisa
+//   })
+// );
+
+// app.use(passport.initialize());
+// app.use(passport.session());
+
+app.use(express.json());
+
+app.use(express.urlencoded({ extended: true }));
+
+app.set("trust proxy", 1);
+
+app.use(
+  session({
+    name: "session",
+    keys: [config.SESSION_SECRET],
+    maxAge: 24 * 60 * 60 * 1000,
+    secure: config.NODE_ENV === "production",
+    httpOnly: true,
+    sameSite: "none",
+  })
+);
+
+app.use(passport.initialize());
+app.use(passport.session());
+
 app.use(
   cors({
     origin: config.FRONTEND_ORIGIN,
@@ -31,30 +77,11 @@ app.use(
   })
 );
 
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-
-app.set("trust proxy", 1); 
-
-app.use(
-  session({
-    name: "session",
-    keys: [config.SESSION_SECRET],
-    maxAge: 24 * 60 * 60 * 1000, // 1 hari
-    secure: config.NODE_ENV === "production",
-    httpOnly: true,
-    sameSite: "none", // wajib none biar cross-site cookies bisa
-  })
-);
-
-app.use(passport.initialize());
-app.use(passport.session());
-  
 app.get(
   `/`,
   asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
-      // throw new BadRequestException("Bad request", ErrorCodeEnum.AUTH_UNAUTHORIZED_ACCESS)
-      return res.status(HTTPSTATUS.OK).json({
+    // throw new BadRequestException("Bad request", ErrorCodeEnum.AUTH_UNAUTHORIZED_ACCESS)
+    return res.status(HTTPSTATUS.OK).json({
       message: "Hello Subscribe to the channel & share",
     });
   })
@@ -70,6 +97,6 @@ app.use(`${BASE_PATH}/task`, isAuthenticated, taskRoutes);
 app.use(errorHandler);
 
 app.listen(config.PORT, async () => {
-console.log(`Server listening on port ${config.PORT} in ${config.NODE_ENV}`);
-await connectDatabase();
+  console.log(`Server listening on port ${config.PORT} in ${config.NODE_ENV}`);
+  await connectDatabase();
 });
