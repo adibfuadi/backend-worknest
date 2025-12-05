@@ -52,7 +52,7 @@ const BASE_PATH = config.BASE_PATH;
 
 app.use(
   cors({
-    origin: "https://worknest-ashy.vercel.app",
+    origin: config.FRONTEND_ORIGIN,
     credentials: true,
   })
 );
@@ -68,9 +68,10 @@ app.use(
     name: "session",
     keys: [config.SESSION_SECRET],
     maxAge: 24 * 60 * 60 * 1000,
-    secure: true,
+    secure: config.NODE_ENV === "production",
     httpOnly: true,
-    sameSite: "none",
+    sameSite: config.NODE_ENV === "production" ? "none" : "lax",
+    domain: config.NODE_ENV === "production" ? ".railway.app" : undefined,
   })
 );
 
